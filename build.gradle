@@ -1,0 +1,33 @@
+apply plugin: 'groovy'
+
+sourceCompatibility = 1.5
+version = '1.0'
+
+repositories {
+    mavenCentral()
+}
+
+//http://sourceforge.net/projects/dacapobench/files/latest/download?source=files
+
+dependencies {
+    compile 'org.codehaus.groovy:groovy-all:2.0.5'
+}
+
+task dacapo(){
+    def f = new File('src/main/resources/dacapo.jar')
+    if (!f.exists()) {
+        new URL('http://sourceforge.net/projects/dacapobench/files/latest/download?source=files').withInputStream{ i -> f.withOutputStream{ it << i }}
+    }
+}
+
+task gcViewer(){
+    def f = new File('src/main/resources/gc-viewer.jar')
+    if (!f.exists()) {
+        new URL('http://sourceforge.net/projects/gcviewer/files/gcviewer-1.34.jar/download').withInputStream{ i -> f.withOutputStream{ it << i }}
+    }
+}
+
+task runScript (dependsOn: ['classes','dacapo','gcViewer'], type: JavaExec) {
+    main = 'Main'
+    classpath = sourceSets.main.runtimeClasspath
+}
